@@ -1,0 +1,8 @@
+Date,Customer,Product,Quantity,Revenue,Cost
+2026-08-01,Alpha Ltd,Consulting,2,1800,600
+2026-08-03,Beta Shop,Design,1,950,250
+2026-08-05,Alpha Ltd,Support,3,1200,300
+2026-08-05,Alpha Ltd,Support,3,1200,300
+2026-08-08,Gamma Co,Consulting,1,900,300
+2026-08-10,Delta Sp z o.o.,Website,1,2400,800
+2026-08-12,Beta Shop,Support,2,,200
