@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="description" content="Business Toolkit helps small businesses manage invoices, receipts, expenses, documents and spreadsheet data in one place.">
+  <title>Business Toolkit — Invoices, Receipts & Data</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#dashboard" aria-label="Business Toolkit home">
+        <span class="brand-mark">BT</span>
+        <span><strong>Business Toolkit</strong><small>Small business workspace</small></span>
+      </a>
+      <nav class="nav" aria-label="Main navigation">
+        <button class="nav-btn active" data-tab="dashboard"><span>▦</span> Dashboard</button>
+        <button class="nav-btn" data-tab="scan"><span>▣</span> Scan</button>
+        <button class="nav-btn" data-tab="analyze"><span>▤</span> Analyze</button>
+        <button class="nav-btn" data-tab="invoices"><span>▧</span> Invoices</button>
+        <button class="nav-btn" data-tab="money"><span>◒</span> Money</button>
+        <button class="nav-btn" data-tab="documents"><span>▱</span> Documents</button>
+      </nav>
+      <p class="local-note">Core records stay in this browser. No account or API key is required.</p>
+    </aside>
+
+    <main class="main">
+      <header class="page-header">
+        <div><h1 id="pageTitle">Dashboard</h1><p id="pageSubtitle">Invoices, receipts, documents and business data in one place.</p></div>
+        <button class="btn secondary" id="exportSummary">Export summary</button>
+      </header>
+
+      <section class="tab active" id="dashboard">
+        <div class="hero">
+          <div>
+            <span class="eyebrow">BUSINESS OVERVIEW</span>
+            <h2>Know what is happening in your business.</h2>
+            <p>Track money, unpaid invoices, receipts, scans and spreadsheet data without jumping between different tools.</p>
+          </div>
+          <button class="btn primary" data-go="scan">Scan a document</button>
+        </div>
+        <div class="metrics">
+          <article class="metric"><span>Revenue</span><strong id="dashRevenue">0.00 PLN</strong><small>Paid invoices</small></article>
+          <article class="metric"><span>Expenses</span><strong id="dashExpenses">0.00 PLN</strong><small>Recorded costs</small></article>
+          <article class="metric"><span>Profit</span><strong id="dashProfit">0.00 PLN</strong><small>Revenue − expenses</small></article>
+          <article class="metric"><span>Outstanding</span><strong id="dashOutstanding">0.00 PLN</strong><small>Unpaid invoices</small></article>
+        </div>
+        <div class="two-col">
+          <article class="panel">
+            <div class="panel-head"><div><h3>Quick actions</h3><p>Common business tasks</p></div></div>
+            <div class="quick-grid">
+              <button data-go="invoices"><b>＋</b><span>Create invoice</span></button>
+              <button data-go="scan"><b>▣</b><span>Scan receipt</span></button>
+              <button data-go="money"><b>◒</b><span>Add expense</span></button>
+              <button data-go="analyze"><b>▤</b><span>Analyze Excel</span></button>
+            </div>
+          </article>
+          <article class="panel">
+            <div class="panel-head"><div><h3>Recent invoices</h3><p id="invoiceCount">0 invoices</p></div><button class="text-btn" data-go="invoices">View all</button></div>
+            <div id="recentInvoices" class="list"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="tab" id="scan">
+        <div class="section-head"><div><h2>Scan documents</h2><p>Capture receipts, invoices and other business paperwork.</p></div></div>
+        <div class="scan-options">
+          <label class="upload-card"><span class="upload-icon">▣</span><strong>Receipt</strong><small>Camera or image file</small><input type="file" id="receiptInput" accept="image/*" capture="environment"></label>
+          <label class="upload-card"><span class="upload-icon">▧</span><strong>Invoice</strong><small>Camera or image file</small><input type="file" id="invoiceScanInput" accept="image/*" capture="environment"></label>
+          <label class="upload-card"><span class="upload-icon">▱</span><strong>Document</strong><small>Camera or image file</small><input type="file" id="documentInput" accept="image/*" capture="environment"></label>
+        </div>
+        <article class="panel hidden" id="scanWorkspace">
+          <div class="panel-head"><div><h3 id="scanName">Document preview</h3><p id="scanType">Ready to save</p></div></div>
+          <div class="scan-workspace">
+            <canvas id="scanCanvas" width="900" height="1200" aria-label="Scanned document preview"></canvas>
+            <div class="scan-tools">
+              <button class="btn secondary" id="rotateScan">Rotate 90°</button>
+              <button class="btn secondary" id="toggleBW">Black & white</button>
+              <button class="btn primary" id="saveScan">Save to Documents</button>
+              <button class="btn secondary" id="downloadScan">Download image</button>
+            </div>
+          </div>
+        </article>
+        <div class="info-note">Automatic receipt OCR is a later upgrade. This version already captures, enhances, stores and downloads document images locally.</div>
+      </section>
+
+      <section class="tab" id="analyze">
+        <div class="section-head"><div><h2>Spreadsheet analyzer</h2><p>Upload CSV or XLSX and get an instant business-data summary.</p></div></div>
+        <article class="panel upload-panel">
+          <label class="file-drop"><strong>Choose CSV or Excel file</strong><span>Supports .csv and .xlsx</span><input type="file" id="sheetInput" accept=".csv,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv"></label>
+        </article>
+        <div id="analysisEmpty" class="empty-state"><span>▤</span><strong>No spreadsheet analyzed yet</strong><p>Upload a sales, expense, inventory or other table to begin.</p></div>
+        <div id="analysisPanel" class="hidden">
+          <div class="metrics analysis-metrics">
+            <article class="metric"><span>Rows</span><strong id="aRows">0</strong></article>
+            <article class="metric"><span>Columns</span><strong id="aCols">0</strong></article>
+            <article class="metric"><span>Missing cells</span><strong id="aMissing">0</strong></article>
+            <article class="metric"><span>Duplicate rows</span><strong id="aDuplicates">0</strong></article>
+          </div>
+          <article class="panel"><div class="panel-head"><div><h3 id="analysisName">Spreadsheet</h3><p id="analysisMeta"></p></div><button class="btn secondary" id="exportCleanCsv">Export cleaned CSV</button></div><div id="numericSummary"></div><div id="sheetPreview"></div></article>
+        </div>
+      </section>
+
+      <section class="tab" id="invoices">
+        <div class="section-head"><div><h2>Invoices</h2><p>Create invoices, calculate VAT and track payment status.</p></div><button class="btn primary" id="newInvoiceBtn">New invoice</button></div>
+        <article class="panel" id="invoiceFormPanel">
+          <form id="invoiceForm">
+            <div class="form-grid">
+              <label>Customer<input id="customer" required placeholder="Customer or company"></label>
+              <label>Invoice number<input id="invoiceNumber" required></label>
+              <label>Issue date<input id="invoiceDate" type="date" required></label>
+              <label>Due date<input id="invoiceDue" type="date" required></label>
+              <label>Currency<select id="invoiceCurrency"><option>PLN</option><option>EUR</option><option>USD</option><option>GBP</option></select></label>
+              <label>Status<select id="invoiceStatus"><option value="unpaid">Unpaid</option><option value="paid">Paid</option><option value="overdue">Overdue</option></select></label>
+            </div>
+            <div class="items-head"><strong>Items</strong><button type="button" class="text-btn" id="addItem">+ Add item</button></div>
+            <div id="invoiceItems"></div>
+            <div class="invoice-total"><span>Total including VAT</span><strong id="invoiceTotal">0.00 PLN</strong></div>
+            <div class="form-actions"><button type="submit" class="btn primary">Save invoice</button><button type="button" class="btn secondary" id="clearInvoice">Clear</button></div>
+          </form>
+        </article>
+        <article class="panel"><div class="panel-head"><div><h3>Saved invoices</h3><p>Payment status and totals</p></div></div><div id="invoiceList" class="list"></div></article>
+      </section>
+
+      <section class="tab" id="money">
+        <div class="section-head"><div><h2>Money</h2><p>Record expenses and understand business profit.</p></div></div>
+        <div class="two-col">
+          <article class="panel">
+            <div class="panel-head"><div><h3>Add expense</h3><p>Manual expense record</p></div></div>
+            <form id="expenseForm" class="stack-form">
+              <label>Description<input id="expenseDescription" required placeholder="Fuel, software, supplies…"></label>
+              <label>Amount<input id="expenseAmount" required type="number" min="0" step="0.01" placeholder="0.00"></label>
+              <label>Category<select id="expenseCategory"><option>Transport</option><option>Office</option><option>Software</option><option>Marketing</option><option>Supplies</option><option>Utilities</option><option>Other</option></select></label>
+              <label>Date<input id="expenseDate" type="date" required></label>
+              <button class="btn primary" type="submit">Add expense</button>
+            </form>
+          </article>
+          <article class="panel"><div class="panel-head"><div><h3>Expense records</h3><p id="expenseCount">0 records</p></div></div><div id="expenseList" class="list"></div></article>
+        </div>
+      </section>
+
+      <section class="tab" id="documents">
+        <div class="section-head"><div><h2>Documents</h2><p>Your locally saved receipt, invoice and document scans.</p></div></div>
+        <div id="documentGrid" class="doc-grid"></div>
+      </section>
+
+      <footer class="footer"><span>Business Toolkit</span><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></footer>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
