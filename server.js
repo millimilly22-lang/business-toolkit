@@ -5,6 +5,7 @@ const path = require('path');
 const root = __dirname;
 const port = Number(process.env.PORT) || 10000;
 const host = '0.0.0.0';
+const googleVerificationTag = '<meta name="google-site-verification" content="nwqdV5DpQLxayr6MkGqKr4ptvxJ0Yz7xf1EgTLlfOvE" />';
 
 const types = {
   '.html': 'text/html; charset=utf-8',
@@ -12,6 +13,8 @@ const types = {
   '.js': 'application/javascript; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
   '.csv': 'text/csv; charset=utf-8',
+  '.xml': 'application/xml; charset=utf-8',
+  '.txt': 'text/plain; charset=utf-8',
   '.svg': 'image/svg+xml',
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
@@ -50,11 +53,18 @@ const server = http.createServer((req, res) => {
       }
 
       const ext = path.extname(filePath).toLowerCase();
+      let body = data;
+
+      if (path.basename(filePath) === 'index.html') {
+        const html = data.toString('utf8');
+        body = Buffer.from(html.includes('google-site-verification') ? html : html.replace('<head>', `<head>\n  ${googleVerificationTag}`), 'utf8');
+      }
+
       res.writeHead(200, {
         'Content-Type': types[ext] || 'application/octet-stream',
         'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=3600'
       });
-      res.end(data);
+      res.end(body);
     });
   });
 });
