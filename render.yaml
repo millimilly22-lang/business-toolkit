@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: business-toolkit
+    runtime: static
+    buildCommand: ""
+    staticPublishPath: .
