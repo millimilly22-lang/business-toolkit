@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://business-toolkit-fu3w.onrender.com/sitemap.xml
+Sitemap: https://business-toolkit-web1.onrender.com/sitemap.xml
